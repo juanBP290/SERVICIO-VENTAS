@@ -1,5 +1,152 @@
 import React, { useState, useRef, useEffect } from "react";
 
+// Cambia estos nombres por los que necesitas y asegúrate de que coincidan con tus carpetas de imágenes
+const categories = [
+  "FILTRO DE GASOLINA EXTERIOR",
+  "FILTRO DE GASOLINA SUMERGIBLE",
+  "FILTRO DE AIRE",
+  "FILTRO DE AIRE ACONDICIONADO",
+  "PRE FILTROS",
+  "EMPAQUE DE TAPA DE BALANCINES",
+  "FILTRO DE PETROLEO",
+  "REGULADOR DE PRESION",
+  "KIT DE DISTRIBUCION",
+  "KIT DE EMBRAGUE",
+  "SOPORTE DE MOTOR",
+  "VALVULA IAC",
+  "SENSOR DE TEMPERATURA DE REFRIGERANTE",
+  "BOBINA DE ENCENDIDO"
+];
+
+const products = [
+  {
+    id: 1,
+    name: "Filtro de Gasolina Exterior",
+    category: "FILTRO DE GASOLINA EXTERIOR",
+    images: Array.from({ length: 5 }, (_, i) => ({
+      src: `/images/filtros/gasolina-exterior-${i + 1}.jpg`,
+      alt: `Filtro Gasolina Exterior ${i + 1}`,
+    })),
+  },
+  {
+    id: 2,
+    name: "Filtro de Gasolina Sumergible",
+    category: "FILTRO DE GASOLINA SUMERGIBLE",
+    images: Array.from({ length: 5 }, (_, i) => ({
+      src: `/images/filtros/gasolina-sumerjible-${i + 1}.jpg`,
+      alt: `Filtro Sumergible ${i + 1}`,
+    })),
+  },
+  {
+    id: 3,
+    name: "Filtro de Aire Estándar",
+    category: "FILTRO DE AIRE",
+    images: Array.from({ length: 7 }, (_, i) => ({
+      src: `/images/filtros/aire-${i + 1}.jpg`,
+      alt: `Filtro Aire ${i + 1}`,
+    })),
+  },
+  {
+    id: 4,
+    name: "Filtro de Aire Acondicionado",
+    category: "FILTRO DE AIRE ACONDICIONADO",
+    images: Array.from({ length: 6 }, (_, i) => ({
+      src: `/images/filtros/ac-${i + 1}.jpg`,
+      alt: `Filtro AC ${i + 1}`,
+    })),
+  },
+  {
+    id: 5,
+    name: "Prefiltro de Combustible",
+    category: "PRE FILTROS",
+    images: Array.from({ length: 8 }, (_, i) => ({
+      src: `/images/filtros/prefiltro-${i + 1}.jpg`,
+      alt: `Prefiltro ${i + 1}`,
+    })),
+  },
+  {
+    id: 6,
+    name: "Empaque Tapa de Balancines",
+    category: "EMPAQUE DE TAPA DE BALANCINES",
+    images: Array.from({ length: 4 }, (_, i) => ({
+      src: `/images/componentes/empaque-balancin-${i + 1}.jpg`,
+      alt: `Empaque Balancines ${i + 1}`,
+    })),
+  },
+  {
+    id: 7,
+    name: "Filtro de Petróleo Premium",
+    category: "FILTRO DE PETROLEO",
+    images: Array.from({ length: 10 }, (_, i) => ({
+      src: `/images/filtros/petroleo-${i + 1}.jpg`,
+      alt: `Filtro Petróleo ${i + 1}`,
+    })),
+  },
+  {
+    id: 8,
+    name: "Regulador de Presión",
+    category: "REGULADOR DE PRESION",
+    images: Array.from({ length: 5 }, (_, i) => ({
+      src: `/images/componentes/regulador-presion-${i + 1}.jpg`,
+      alt: `Regulador Presión ${i + 1}`,
+    })),
+  },
+  {
+    id: 9,
+    name: "Kit de Distribución Completo",
+    category: "KIT DE DISTRIBUCION",
+    images: Array.from({ length: 6 }, (_, i) => ({
+      src: `/images/componentes/kit-distribucion-${i + 1}.jpg`,
+      alt: `Kit Distribución ${i + 1}`,
+    })),
+  },
+  {
+    id: 10,
+    name: "Kit de Embrague HD",
+    category: "KIT DE EMBRAGUE",
+    images: Array.from({ length: 7 }, (_, i) => ({
+      src: `/images/componentes/kit-embrague-${i + 1}.jpg`,
+      alt: `Kit Embrague ${i + 1}`,
+    })),
+  },
+  {
+    id: 11,
+    name: "Soporte Motor Reforzado",
+    category: "SOPORTE DE MOTOR",
+    images: Array.from({ length: 5 }, (_, i) => ({
+      src: `/images/componentes/soporte-motor-${i + 1}.jpg`,
+      alt: `Soporte Motor ${i + 1}`,
+    })),
+  },
+  {
+    id: 12,
+    name: "Válvula IAC Automotriz",
+    category: "VALVULA IAC",
+    images: Array.from({ length: 6 }, (_, i) => ({
+      src: `/images/componentes/valvula-iac-${i + 1}.jpg`,
+      alt: `Valvula IAC ${i + 1}`,
+    })),
+  },
+  {
+    id: 13,
+    name: "Sensor Temperatura Refrigerante",
+    category: "SENSOR DE TEMPERATURA DE REFRIGERANTE",
+    images: Array.from({ length: 5 }, (_, i) => ({
+      src: `/images/componentes/sensor-temp-${i + 1}.jpg`,
+      alt: `Sensor Temp Refrigerante ${i + 1}`,
+    })),
+  },
+  {
+    id: 14,
+    name: "Bobina de Encendido Universal",
+    category: "BOBINA DE ENCENDIDO",
+    images: Array.from({ length: 10 }, (_, i) => ({
+      src: `/images/bobinas/bobina-${i + 1}.jpg`,
+      alt: `Bobina de Encendido ${i + 1}`,
+    })),
+  },
+];
+
 export default function App() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
@@ -7,10 +154,6 @@ export default function App() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const modalRef = useRef(null);
-
-  // ... categories y products igual que tu código ...
-
-  // [Tu lista de categories y products, igual, aquí...]
 
   // Filtrado
   const filteredProducts = products.filter((product) => {
@@ -210,6 +353,6 @@ export default function App() {
   );
 }
 
-// Agrega esta animación a tu Tailwind config o usa style tag:
+// Si usas Tailwind, puedes agregar la animación opcionalmente en tu CSS:
 // .animate-fadeIn { animation: fadeIn 0.3s; }
 // @keyframes fadeIn { from { opacity: 0; transform: scale(0.98);} to { opacity: 1; transform: scale(1);} }
