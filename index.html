@@ -1,3 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Registro de Servicios</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .scroll-table-x {
+      overflow-x: auto;
+      position: relative;
+      width: 100%;
+    }
+    .scroll-table-x::-webkit-scrollbar {
+      height: 10px;
+    }
+    .fijo {
+      min-width: 1350px !important;
+      max-width: 1500px !important;
+      table-layout: fixed;
+    }
+    @media (min-width: 1800px) {
+      .fijo {
+        min-width: 1700px !important;
+        max-width: 1800px !important;
+      }
+    }
+    .col-fecha, .col-placa, .col-marca, .col-motor, .col-km, .col-tiempo, .col-interno, .col-total {
+      max-width: 90px;
+      min-width: 70px;
+      width: 90px;
+      white-space: nowrap !important;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-left: 2px;
+      padding-right: 2px;
+      font-size: 11px;
+    }
+    /* CODIGO OEM ancho y multilínea */
+    .col-oem {
+      min-width: 210px;
+      max-width: 340px;
+      width: 270px;
+      white-space: normal !important;
+      overflow-wrap: break-word;
+      word-break: break-all;
+      font-size: 11px;
+      background: #f7fafc;
+      font-weight: 600;
+      color: #1e293b;
+    }
+    .col-descripcion {
+      min-width: 140px;
+      max-width: 220px;
+      width: 180px;
+      white-space: normal !important;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      font-size: 11px;
+      line-height: 1.1rem;
+    }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+<!-- Login Modal -->
+<div id="loginModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+  <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-xs">
+    <h2 class="text-xl font-semibold mb-4 text-center">Acceso</h2>
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label class="text-sm font-medium">Usuario</label>
+        <input type="text" name="usuario" required class="w-full border px-2 py-1 rounded" autocomplete="off"/>
+      </div>
+      <div>
+        <label class="text-sm font-medium">Contraseña</label>
+        <input type="password" name="password" required class="w-full border px-2 py-1 rounded"/>
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Entrar</button>
+      <p id="loginError" class="text-red-600 text-center text-sm hidden">Usuario o contraseña incorrectos</p>
+    </form>
+  </div>
+</div>
+
+<!-- Main Content -->
+<div id="mainContent" class="hidden">
+  <header class="bg-white shadow-sm">
+    <div class="w-full max-w-full px-4 py-4 flex flex-col sm:flex-row justify-between items-center">
+      <h1 class="text-2xl font-bold text-gray-900 mb-3 sm:mb-0">Registro de Servicios</h1>
+      <button id="logoutBtn" class="bg-gray-400 hover:bg-gray-600 text-white px-4 py-2 rounded-md transition-colors duration-200">
+        Cerrar sesión
+      </button>
+    </div>
+    <!-- TRES BARRAS DE BUSQUEDA -->
+    <div class="w-full max-w-full px-4 pb-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+      <input id="searchInput" type="text" placeholder="Buscar en toda la base de datos..." class="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+      <input id="searchCodigo" type="text" placeholder="Buscar por PLACA, MARCA, MOTOR, DESCRIPCIÓN..." class="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" />
+      <input id="searchCodigo2" type="text" placeholder="Buscar por CÓDIGO OEM, CÓD INTERNO, TOTAL..." class="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500" />
+    </div>
+  </header>
+
+  <main class="w-full max-w-full px-1 py-3">
+    <div class="w-full bg-white shadow overflow-hidden sm:rounded-lg">
+      <div class="scroll-table-x" id="scrollBottom">
+        <table class="min-w-full divide-y divide-gray-200 fijo" id="productsTable">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="col-fecha px-1 py-1 font-semibold text-left text-gray-700">FECHA</th>
+              <th class="col-placa px-1 py-1 font-semibold text-left text-gray-700">PLACA</th>
+              <th class="col-marca px-1 py-1 font-semibold text-left text-gray-700">MARCA/MODELO</th>
+              <th class="col-motor px-1 py-1 font-semibold text-left text-gray-700">MOTOR</th>
+              <th class="col-km px-1 py-1 font-semibold text-left text-gray-700">KM</th>
+              <th class="col-tiempo px-1 py-1 font-semibold text-left text-gray-700">TIEMPO</th>
+              <th class="col-oem px-1 py-1 font-semibold text-left text-gray-700">CODIGO OEM</th>
+              <th class="col-interno px-1 py-1 font-semibold text-left text-gray-700">COD INTERNO</th>
+              <th class="col-descripcion px-1 py-1 font-semibold text-left text-gray-700">DESCRIPCIÓN</th>
+              <th class="col-total px-1 py-1 font-semibold text-left text-gray-700">TOTAL</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="bg-white divide-y divide-gray-200">
+            <!-- Se llena con JS -->
+          </tbody>
+        </table>
+      </div>
+      <div id="pagination" class="flex justify-center items-center my-4"></div>
+    </div>
+  </main>
+</div>
+
 <script>
   // Usuario y contraseña
   const USER = "admin";
@@ -157,9 +286,7 @@
     currentPage = n;
     renderTable();
     renderPagination();
-    document.getElementById('productsTable').scrollIntoView({behavior:'smooth'});
-  }
-</script>
+    document.getElementById('productsTable').scrollIntoView({behavior:'smo
 
 
 
