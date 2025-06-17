@@ -90,7 +90,7 @@
         Cerrar sesión
       </button>
     </div>
-    <!-- TRES BARRAS DE BUSQUEDA, todos buscan en toda la base de datos -->
+    <!-- TRES BARRAS DE BUSQUEDA (todas buscan en toda la base de datos) -->
     <div class="w-full max-w-full px-4 pb-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
       <input id="searchInput" type="text" placeholder="Buscar en toda la base de datos..." class="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
       <input id="searchCodigo" type="text" placeholder="Buscar en toda la base de datos..." class="w-full pl-3 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" />
@@ -199,18 +199,30 @@
       });
   }
 
-  // BUSQUEDA GENERAL EN LOS 3 CAMPOS
+  // BUSQUEDA GENERAL EN LOS 3 CAMPOS - VARIANTE AND
   function unifiedSearch() {
-    const value1 = document.getElementById('searchInput').value;
-    const value2 = document.getElementById('searchCodigo').value;
-    const value3 = document.getElementById('searchCodigo2').value;
-    const combinedSearch = (value1 + " " + value2 + " " + value3).trim().toLowerCase();
+    // Toma el texto de los 3 campos, separa por espacios y une todas las palabras en un solo array
+    const value1 = document.getElementById('searchInput').value.trim().toLowerCase();
+    const value2 = document.getElementById('searchCodigo').value.trim().toLowerCase();
+    const value3 = document.getElementById('searchCodigo2').value.trim().toLowerCase();
+    const searchWords = (value1 + " " + value2 + " " + value3)
+      .trim()
+      .split(/\s+/)
+      .filter(w => w.length > 0);
 
-    filtered = entries.filter(e =>
-      Object.values(e).some(val =>
-        String(val).toLowerCase().includes(combinedSearch)
-      )
-    );
+    if (searchWords.length === 0) {
+      filtered = entries;
+    } else {
+      // AND lógico: cada palabra debe aparecer en al menos una celda de la fila
+      filtered = entries.filter(e =>
+        searchWords.every(word =>
+          Object.values(e).some(val =>
+            String(val).toLowerCase().includes(word)
+          )
+        )
+      );
+    }
+
     currentPage = 1;
     renderTable();
     renderPagination();
