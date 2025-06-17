@@ -46,16 +46,6 @@
       font-size: 11px;
       line-height: 1.1rem;
     }
-    input[type='number']::-webkit-inner-spin-button,
-    input[type='number']::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    input[type='number'] {
-      -moz-appearance: textfield;
-      appearance: textfield;
-      text-align: right;
-    }
   </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -128,7 +118,7 @@
   // Usuario y contraseña
   const USER = "admin";
   const PASS = "1234";
-  // SheetDB API
+  // SheetDB API NUEVO
   const SHEETDB_API = "https://sheetdb.io/api/v1/piot8q1ns1nzv";
 
   function isLoggedIn() {
@@ -172,18 +162,29 @@
   let filtered = [];
   let currentPage = 1;
   const perPage = 25;
-  let cantidades = {};
 
   function fetchAndRender() {
     fetch(SHEETDB_API)
       .then(res => res.json())
       .then(data => {
+        // ADAPTA ESTOS NOMBRES A TUS CABECERAS DEL SHEET SI SON DIFERENTES
         entries = data.map((e, idx) => ({
-          ...e,
           id: idx + 1,
-          total: e.total && !isNaN(parseFloat(e.total)) ? parseFloat(e.total) : ""
+          fecha: e.fecha || e.FECHA || "",
+          placa: e.placa || e.PLACA || "",
+          marca: e["marca/modelo"] || e["MARCA/MODELO"] || e.marca || "",
+          motor: e.motor || e.MOTOR || "",
+          km: e.km || e.KM || "",
+          tiempo: e.tiempo || e.TIEMPO || "",
+          oem: e["codigo_oem"] || e["CODIGO OEM"] || e.oem || "",
+          interno: e["cod_interno"] || e["COD INTERNO"] || "",
+          descripcion: e.descripcion || e.DESCRIPCION || "",
+          total: e.total || e.TOTAL || "",
         }));
         applyFilters();
+      })
+      .catch(err => {
+        document.getElementById('tableBody').innerHTML = `<tr><td colspan="10" class="px-6 py-4 text-center text-red-500">Error al cargar los datos</td></tr>`;
       });
   }
 
@@ -240,15 +241,15 @@
     filtered.slice(start, end).forEach(entry => {
       const row = document.createElement('tr');
       row.innerHTML = `
-        <td class="col-fecha px-1 py-1">${entry.fecha || ""}</td>
-        <td class="col-placa px-1 py-1">${entry.placa || ""}</td>
-        <td class="col-marca px-1 py-1">${entry.marca || ""}</td>
-        <td class="col-motor px-1 py-1">${entry.motor || ""}</td>
-        <td class="col-km px-1 py-1">${entry.km || ""}</td>
-        <td class="col-tiempo px-1 py-1">${entry.tiempo || ""}</td>
-        <td class="col-oem px-1 py-1">${entry.oem || ""}</td>
-        <td class="col-interno px-1 py-1">${entry.interno || ""}</td>
-        <td class="col-descripcion px-1 py-1">${entry.descripcion || ""}</td>
+        <td class="col-fecha px-1 py-1">${entry.fecha}</td>
+        <td class="col-placa px-1 py-1">${entry.placa}</td>
+        <td class="col-marca px-1 py-1">${entry.marca}</td>
+        <td class="col-motor px-1 py-1">${entry.motor}</td>
+        <td class="col-km px-1 py-1">${entry.km}</td>
+        <td class="col-tiempo px-1 py-1">${entry.tiempo}</td>
+        <td class="col-oem px-1 py-1">${entry.oem}</td>
+        <td class="col-interno px-1 py-1">${entry.interno}</td>
+        <td class="col-descripcion px-1 py-1">${entry.descripcion}</td>
         <td class="col-total px-1 py-1 font-semibold text-blue-800">${entry.total !== "" ? "S/" + Number(entry.total).toFixed(2) : ""}</td>
       `;
       tbody.appendChild(row);
@@ -261,13 +262,6 @@
     const total = filtered.length;
     const totalPages = Math.ceil(total / perPage);
     if(totalPages <= 1) return;
-    function goToPage(p) {
-      if(p < 1 || p > totalPages) return;
-      currentPage = p;
-      renderTable();
-      renderPagination();
-      document.getElementById('productsTable').scrollIntoView({behavior:'smooth'});
-    }
     const pag = [];
     pag.push(`<button class="px-2 py-1 border rounded ${currentPage===1?"text-gray-400":"text-gray-700 hover:bg-gray-100"} mr-1" ${currentPage===1?"disabled":""} onclick="goToPageJs(${currentPage-1})">Anterior</button>`);
     let maxShow = 3;
@@ -314,4 +308,5 @@
 </script>
 </body>
 </html>
+
 
