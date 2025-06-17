@@ -118,7 +118,7 @@
   // Usuario y contraseña
   const USER = "admin";
   const PASS = "1234";
-  // SheetDB API NUEVO
+  // SheetDB API
   const SHEETDB_API = "https://sheetdb.io/api/v1/piot8q1ns1nzv";
 
   function isLoggedIn() {
@@ -167,19 +167,18 @@
     fetch(SHEETDB_API)
       .then(res => res.json())
       .then(data => {
-        // ADAPTA ESTOS NOMBRES A TUS CABECERAS DEL SHEET SI SON DIFERENTES
         entries = data.map((e, idx) => ({
           id: idx + 1,
-          fecha: e.fecha || e.FECHA || "",
-          placa: e.placa || e.PLACA || "",
-          marca: e["marca/modelo"] || e["MARCA/MODELO"] || e.marca || "",
-          motor: e.motor || e.MOTOR || "",
-          km: e.km || e.KM || "",
-          tiempo: e.tiempo || e.TIEMPO || "",
-          oem: e["codigo_oem"] || e["CODIGO OEM"] || e.oem || "",
-          interno: e["cod_interno"] || e["COD INTERNO"] || "",
-          descripcion: e.descripcion || e.DESCRIPCION || "",
-          total: e.total || e.TOTAL || "",
+          fecha: e.fecha || "",
+          placa: e.placa || "",
+          marca: e["marca/mod"] || "",
+          motor: e.motor || "",
+          km: e.km || "",
+          tiempo: e.tiempo || "",
+          oem: e["codigo oem"] || "",
+          interno: e["cod interno"] || "",
+          descripcion: e.descripcion || "",
+          total: e.total || "",
         }));
         applyFilters();
       })
